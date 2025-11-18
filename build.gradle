@@ -1,0 +1,166 @@
+/*
+ * Copyright (c) 2023-2025 Apple Inc. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+plugins {
+    id 'java'
+    id 'com.github.johnrengelman.shadow' version '7.1.2'
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+}
+
+jar {
+    archiveFileName = "pollianna-${rootProject.version}.jar"
+    manifest {
+        attributes(
+                'Premain-Class': 'com.apple.pollianna.PolliannaAgent',
+                'Agent-Class': 'com.apple.pollianna.PolliannaAgent',
+                'Can-Redefine-Classes': 'false',
+                'Can-Retransform-Classes': 'false',
+                'Can-Set-Native-Method-Prefix': 'false',
+                'Implementation-Title': "Pollianna Agent",
+                'Implementation-Version': rootProject.version
+        )
+    }
+}
+
+shadowJar {
+    archiveFileName = "pollianna-${rootProject.version}-all.jar"
+    configurations = [project.configurations.runtimeClasspath]
+
+    manifest {
+        attributes(
+                'Premain-Class': 'com.apple.pollianna.PolliannaAgent',
+                'Agent-Class': 'com.apple.pollianna.PolliannaAgent',
+                'Can-Redefine-Classes': 'false',
+                'Can-Retransform-Classes': 'false',
+                'Can-Set-Native-Method-Prefix': 'false',
+                'Implementation-Title': "Pollianna Agent",
+                'Implementation-Version': rootProject.version,
+                'Pollianna-Shadow-Jar': 'true'
+        )
+    }
+
+    // Exclude signature files to avoid security exceptions
+    exclude 'META-INF/*.SF'
+    exclude 'META-INF/*.DSA'
+    exclude 'META-INF/*.RSA'
+
+    mergeServiceFiles()
+}
+
+task isolatedJar(type: Jar) {
+    archiveFileName = "pollianna-${rootProject.version}-iso.jar"
+
+    // Include only the wrapper class needed for the isolated JAR
+    from(sourceSets.main.output) {
+        include 'com/apple/pollianna/IsolatingPolliannaAgent.class'
+        include 'com/apple/pollianna/IsolatingPolliannaAgent$AgentClassLoader.class'
+    }
+
+    // Embed the fat JAR inside this JAR
+    from(shadowJar.outputs.files) {
+        rename { "pollianna-all.jar" }
+    }
+
+    manifest {
+        attributes(
+                'Premain-Class': 'com.apple.pollianna.IsolatingPolliannaAgent',
+                'Agent-Class': 'com.apple.pollianna.IsolatingPolliannaAgent',
+                'Can-Redefine-Classes': 'false',
+                'Can-Retransform-Classes': 'false',
+                'Can-Set-Native-Method-Prefix': 'false',
+                'Implementation-Title': "Pollianna Isolating Agent",
+                'Implementation-Version': rootProject.version,
+                'Pollianna-Isolated-Jar': 'true'
+        )
+    }
+
+    dependsOn shadowJar
+}
+
+artifacts {
+    archives jar
+    archives shadowJar
+    archives isolatedJar
+}
+
+dependencies {
+    testImplementation "org.junit.jupiter:junit-jupiter-api:$junitVersion"
+    testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:$junitVersion"
+
+    testImplementation "io.grpc:grpc-netty-shaded:$grpcVersion"
+    testImplementation "io.grpc:grpc-protobuf:$grpcVersion"
+    testImplementation "io.grpc:grpc-stub:$grpcVersion"
+    testImplementation "io.opentelemetry.proto:opentelemetry-proto:$oTelProtoVersion"
+    testImplementation "com.google.protobuf:protobuf-java:$protobufVersion"
+    testImplementation "javax.annotation:javax.annotation-api:$javaxAnnotationVersion"
+
+    implementation "io.opentelemetry:opentelemetry-api:$oTelVersion"
+    implementation "io.opentelemetry:opentelemetry-sdk:$oTelVersion"
+    implementation "io.opentelemetry:opentelemetry-exporter-otlp:$oTelVersion"
+}
+
+// Separate test task for tests tagged with 'fresh-jvm'
+// These tests run in fresh JVMs with minimal prior compilation
+task freshJvmTest(type: Test) {
+    testLogging {
+        events "passed", "skipped", "failed"
+        // Suppress standard output/error to reduce noise from test discovery
+        showStandardStreams = false
+    }
+    minHeapSize "1G"
+    maxHeapSize "1G"
+    forkEvery = 1
+
+    jvmArgs '-Djava.util.logging.manager=java.util.logging.LogManager'
+
+    if (project.hasProperty("jvmArgs")) {
+        jvmArgs project.getProperty("jvmArgs").split(' ')
+    }
+    if (JavaVersion.current().isJava9Compatible()) {
+        jvmArgs += '--add-opens=jdk.jfr/jdk.jfr.internal=ALL-UNNAMED'
+    }
+
+    useJUnitPlatform {
+        includeTags 'fresh-jvm'
+    }
+}
+
+test {
+    dependsOn freshJvmTest
+    testLogging {
+        events "passed", "skipped", "failed"
+    }
+    minHeapSize "1G"
+    maxHeapSize "1G"
+    if (project.hasProperty("jvmArgs")) {
+        jvmArgs project.getProperty("jvmArgs").split(' ')
+    }
+    if (JavaVersion.current().isJava9Compatible()) {
+        jvmArgs += '--add-opens=jdk.jfr/jdk.jfr.internal=ALL-UNNAMED'
+    }
+    useJUnitPlatform {
+        // Exclude tests that need fresh JVMs - they run in a separate task
+        excludeTags 'fresh-jvm'
+    }
+}
+
+task printFlagsFinal(type: JavaExec) {
+    jvmArgs "-XX:+PrintFlagsFinal", "-version"
+    main = 'PacifyGradle'
+}
