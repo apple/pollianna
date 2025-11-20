@@ -168,7 +168,7 @@ final double maxJavaHeapWorkloadPercentage = jvm.getGcWorkloadMax()
 ...
 ```
 
-See [Pollianna API Examples](src/test/java/PolliannaApiExamples.java) for more details on
+See [Pollianna API Examples](src/test/java/com/apple/pollianna/PolliannaApiExamples.java) for more details on
 how to create seed objects and how to activate and query them. 
 There is an example for each available seed class.
 Both aggregating and sampling style are supported.
