@@ -32,12 +32,12 @@ All Pollianna JMX beans must be instated in one of these three ways:
 
 #### Starting JMX Beans by a Static Method Call
 Pollianna can be started by:
-```
+```java
 Pollianna.start();
 ```
 Without any arguments, this call installs and starts the "Jvm" bean,
 so is equivalent:
-```
+```java
 Pollianna.start("Jvm");
 ```
 
@@ -49,10 +49,10 @@ If an argument begins with the keyword `file` followed by a colon (':'),
 then it specifies a file path and all arguments in that file,
 separated by semicolons (';'), are evaluated.
 Examples:
-```
+```java
 Pollianna.start("file:relative-path/pollianna-arguments.txt");
 ```
-```
+```java
 Pollianna.start("file:/absolute-path/pollianna-arguments.txt");
 ```
 
@@ -60,7 +60,7 @@ If an argument begins with the keyword `interval` followed by a colon (':'),
 then the rest of the argument specifies the interval time in seconds
 to be used for periodic sampling (of RT and NMT metrics). The default is 10.
 Example:
-```
+```java
 Pollianna.start("interval:5");
 ```
 
@@ -74,7 +74,7 @@ stemming from its getter method `getPause()`,
 and the return type of `getPause()` has a getter method 'getMax()',
 then the complete attribute name is "PauseMax".
 Example bean argument with select attributes:
-```
+```java
 "GcAggregate|PauseMax,CycleAvg,AllocationRateMax"
 ```
 If the same bean name is specified multiple times, only the right-most argument applies.
@@ -84,19 +84,19 @@ If the JDK in use supports NMT data discovery by a dedicated JMX bean (see below
 then these additional beans are available: `NmtAggregate` and `NmtSample`.
 
 Example with multiple arguments:
-```
+```java
 Pollianna.start("interval:20", "RtSample", "GcAggregate|PauseMax,CycleAvg,AllocationRateMax", "file:morePolliannaArguments.txt");
 ```
 
 #### Pollianna as Java Command Line Agent
 Adding this to your JVM command line invokes Pollianna without touching your application's source code.
-```
+```bash
 -javaagent:pollianna-1.16.1.jar
 ```
 You can provide the same arguments as for a Pollianna invokation by method call,
 except that they have to be combined into one single string in which they are separated by semicolons.
 Full example:
-```
+```shell
 java -Xms4G -Xmx4G \
      -javaagent:pollianna-1.16.1.jar="interval:20;NmtSample;GcAggregate|PauseMax,CycleAvg,AllocationRateMax;file:morePolliannaArguments.txt" \
      MyApplication
@@ -160,7 +160,7 @@ The names of the involved classes correspond directly to the names of the above 
 Example: there is a JMX bean name "GcAggregate" and an API class `GcAggregateSeed`.
 Background: a "seed" is what is inside a "bean", without the shell, the JMX wrapper.
 Example:
-```
+```java
 final JvmSeed jvm = new JvmSeed();
 jvm.startRecording();
 ...
@@ -190,7 +190,7 @@ This is started by calling `startRecording()`.
 This interval, with default value 10 seconds, can only be changed globally,
 and only before any sampling seed or JMX bean has started recording.
 For example, this call changes the NMT recording interval from the default to 5 seconds:
-```
+```java
 PeridodicAggregator.setIntervalSeconds(5);
 ```
 
@@ -211,18 +211,18 @@ with the same choice between `startRecording()` and `recordNow()`.
 And the same basic calls that apply to `NmtAggregatSeed` also apply to `RtAggregateSeed`.
 
 Example:
-```
+```java
     final RtAggregateSeed seed = new RtAggregateSeed();
     final long mappedMemoryBytes = seed.getMappedMemory();
 ```
 
 ## Building
 This command creates ready-to-use JAR files and places them into `./build/libs`.
-```
+```shell
 ./gradlew build
 ```
 Excluding testing:
-```
+```shell
 ./gradlew build -x test
 ```
 
@@ -235,10 +235,11 @@ These alternative JAR files are created:
   All dependencies will be isolated from the application by a custom class loader with a separate claspath.
 
 ## Testing
-```
+```shell
 ./gradlew test
 ```
 In addition, this command tests Pollianna with every garbage collector available
 in the JDK that it is running on.
-```
+```shell
 src/test/test.sh
+```
