@@ -85,7 +85,7 @@ then these additional beans are available: `NmtAggregate` and `NmtSample`.
 
 Example with multiple arguments:
 ```
-Pollianna.start(interval:20", "RtSample", "GcAggregate|PauseMax,CycleAvg,AllocationRateMax", "file:morePolliannaArguments.txt);
+Pollianna.start("interval:20", "RtSample", "GcAggregate|PauseMax,CycleAvg,AllocationRateMax", "file:morePolliannaArguments.txt");
 ```
 
 #### Pollianna as Java Command Line Agent
