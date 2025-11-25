@@ -1,7 +1,7 @@
 # Polliana Metrics Choices
 
 These types of metric sets are available:
-- Aggregated essential metrics for [best practices standard JVM monitoring](JVM-Essentials), or a select subset thereof.
+- Aggregated essential metrics for [best practices standard JVM monitoring](#JVM-Essentials), or a select subset thereof.
 - Comprehensive or select sampled [GC](#GC-Sampling), [NMT](#NMT-Sampling) metrics, or other [miscellaneous runtime](#RT-Sampling) metrics.
 - Comprehensive or select aggregated [GC](#GC-Aggregating), [NMT](#NMT-Aggregating), or other [miscellaneous runtime](#RT-Aggregating) metrics.
 
