@@ -93,7 +93,7 @@ Adding this to your JVM command line invokes Pollianna without touching your app
 ```bash
 -javaagent:pollianna-1.16.1.jar
 ```
-You can provide the same arguments as for a Pollianna invokation by method call,
+You can provide the same arguments as for a Pollianna invocation by method call,
 except that they have to be combined into one single string in which they are separated by semicolons.
 Full example:
 ```shell
