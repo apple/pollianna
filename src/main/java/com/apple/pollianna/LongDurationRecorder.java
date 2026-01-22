@@ -34,13 +34,15 @@ public class LongDurationRecorder extends LongValueRecorder {
     }
 
     private long intervalStartMillis = uptimeMillis();
+    private double lastPortionValue = 0;
 
     protected double portion() {
         final long intervalMillis = uptimeMillis() - intervalStartMillis;
-        if (intervalMillis <= 0) {
-            return 0.0; // Return 0% if no time has elapsed
+        if (intervalMillis <= 1) {
+            return lastPortionValue; // Return previous value if under 1ms time has elapsed
         }
-        return ((double) total() / (double) intervalMillis) * 100.0;
+        lastPortionValue = ((double) total() / (double) intervalMillis) * 100.0;
+        return lastPortionValue;
     }
 
     @Override
