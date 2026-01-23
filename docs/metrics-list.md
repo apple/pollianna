@@ -1,4 +1,4 @@
-# Polliana Metrics Choices
+# Pollianna Metrics Choices
 
 These types of metric sets are available:
 - Aggregated essential metrics for [best practices standard JVM monitoring](#JVM-Essentials), or a select subset thereof.
@@ -122,7 +122,7 @@ As GC cycles can overlap with polling intervals, their calculated runtime portio
 An allocation rate sample is formed by the difference between 
 how full the Java heap is at the beginning of a GC
 and how full it was at the end of the preceding GC, 
-divided by the time between those two meaasurements.
+divided by the time between those two measurements.
 
 | JMX Attribute                |  Type  |    Unit    | Description                                    |
 |:-----------------------------|:------:|:----------:|:-----------------------------------------------|
@@ -144,7 +144,7 @@ Occupancy is only updated as new samples become available. Otherwise, the previo
 |:------------------------|:------:|:----:|:------------------------------------------|
 | GcAggregateOccupancyMin | double |  %   | Lowest detected heap occupancy percentage |
 | GcAggregateOccupancyAvg | double |  %   | Average heap occupancy percentage         |
-| GcAggregateOccupancyMax | double |  %   | Higest detected heap occupancy percentage |
+| GcAggregateOccupancyMax | double |  %   | Highest detected heap occupancy percentage |
 
 ### Java Heap Workload
 
@@ -169,7 +169,7 @@ So far, this variability below the initial size has only been observed with G1.
 |:-----------------------|:------:|:----:|:-----------------------------------------|
 | GcAggregateWorkloadMin | double |  %   | Lowest detected heap workload percentage |
 | GcAggregateWorkloadAvg | double |  %   | Average heap workload percentage         |
-| GcAggregateWorkloadMax | double |  %   | Higest detected heap workload percentage |
+| GcAggregateWorkloadMax | double |  %   | Highest detected heap workload percentage |
 
 ### Direct Buffer Memory
 
@@ -277,7 +277,7 @@ but it provides aggregates in the following form.
 
 | JMX Attribute              | Type |  Unit  | Description                                         |
 |:---------------------------|:----:|:------:|:----------------------------------------------------|
-| RtAggregateMappedMemoryMin | long | bytes  | Minimun memory used by file-mapped buffers          |
+| RtAggregateMappedMemoryMin | long | bytes  | Minimum memory used by file-mapped buffers          |
 | RtAggregateMappedMemoryAvg | long | bytes  | Average memory used by file-mapped buffers          |
 | RtAggregateMappedMemoryMax | long | bytes  | Maximum memory used by file-mapped buffers          |
 | RtStartedThreadCount       | long | number | Number of platform threads created and then started |
