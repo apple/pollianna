@@ -39,7 +39,7 @@ So far, this variability below the initial size has only been observed with G1.
 The "Serial" collector is selected by the JVM command line option ```-XX:+UseSerialGC```.
 
 It is a "stop-the-world" collector:
-application execution is always suspened for the entire time when the GC is active.
+application execution is always suspended for the entire time when the GC is active.
 Therefore, GC pauses and GC cycles are interchangeable, with identical count and duration metric values.
 It is sufficient to monitor either of these and omit the other.
 
@@ -56,7 +56,7 @@ The Parallel collector is the default in JDK 8.
 It is explicitly selected by the JVM command line option ```-XX:+UseParallellGC```.
 
 It is a "stop-the-world" collector:
-application execution is always suspened for the entire time when the GC is active.
+application execution is always suspended for the entire time when the GC is active.
 Therefore, GC pauses and GC cycles are interchangeable, with identical count and duration metric values.
 It is sufficient to monitor either of these and omit the other.
 
@@ -70,7 +70,7 @@ because they do not establish a complete live set of objects.
 The Concurrent Mark-Sweep collector is selected by the JVM command line option ```-XX:+UseConcMarkSweepGC```.
 
 It is a partially concurrent collector: 
-application execution is only suspened for some of the times when the GC is active.
+application execution is only suspended for some of the times when the GC is active.
 GC pauses and GC cycles usually differ,
 except for young generation collections,
 which are still executed in a stop-the-world manner.
@@ -87,7 +87,7 @@ The G1 collector is the default as of JDK 9.
 It is explicitly selected by the JVM command line option ```-XX:+UseG1GC```.
 
 It is a partially concurrent collector:
-application execution is only suspened for some of the times when the GC is active.
+application execution is only suspended for some of the times when the GC is active.
 GC pauses and GC cycles usually differ,
 except for pure young generation collections,
 which are still executed in a stop-the-world manner.

@@ -191,7 +191,7 @@ This interval, with default value 10 seconds, can only be changed globally,
 and only before any sampling seed or JMX bean has started recording.
 For example, this call changes the NMT recording interval from the default to 5 seconds:
 ```java
-PeridodicAggregator.setIntervalSeconds(5);
+PeriodicAggregator.setIntervalSeconds(5);
 ```
 
 #### NMT Sampling
@@ -232,7 +232,7 @@ These alternative JAR files are created:
 - With all dependencies included ("fat JAR"): `pollianna-<version>-all.jar`.
 - With all dependencies included and isolated ("iso JAR"): `pollianna-<version>-iso.jar`.
   Must be used as command line agent.
-  All dependencies will be isolated from the application by a custom class loader with a separate claspath.
+  All dependencies will be isolated from the application by a custom class loader with a separate classpath.
 
 ## Testing
 ```shell
