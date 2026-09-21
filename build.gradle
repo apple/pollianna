@@ -116,6 +116,64 @@ artifacts {
     archives isolatedJar
 }
 
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            // publish the plain jar (with its dependency metadata) plus sources and javadoc;
+            // the shadow ("-all") and isolated ("-iso") jars are build outputs only, not published
+            from components.java
+            artifact(sourcesJar)
+            artifact(javadocJar)
+
+            pom {
+                name = project.name
+                description = 'Pollianna is a Java library and command line agent that accumulates JVM ' +
+                        'metrics over user-determined polling intervals and exposes them via JMX and OpenTelemetry.'
+                url = 'https://github.com/apple/pollianna'
+                licenses {
+                    license {
+                        name = 'The Apache License, Version 2.0'
+                        url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                    }
+                }
+                developers {
+                    developer {
+                        id = 'pollianna-project-authors'
+                        name = 'Pollianna project authors'
+                        email = 'pollianna-oss@group.apple.com'
+                    }
+                }
+                scm {
+                    connection = 'scm:git:git://github.com/apple/pollianna.git'
+                    developerConnection = 'scm:git:ssh://github.com:apple/pollianna.git'
+                    url = 'https://github.com/apple/pollianna'
+                }
+                issueManagement {
+                    system = 'GitHub Issues'
+                    url = 'https://github.com/apple/pollianna/issues'
+                }
+                ciManagement {
+                    system = 'GitHub Actions'
+                    url = 'https://github.com/apple/pollianna/actions'
+                }
+            }
+        }
+    }
+
+    repositories {
+        maven {
+            name = 'sonatype'
+            def releasesRepoUrl = 'https://ossrh-staging-api.central.sonatype.com/service/local/staging/deploy/maven2/'
+            def snapshotsRepoUrl = 'https://central.sonatype.com/repository/maven-snapshots/'
+            url = project.isReleaseBuild ? releasesRepoUrl : snapshotsRepoUrl
+            credentials {
+                username = System.getenv('SONATYPE_USER')
+                password = System.getenv('SONATYPE_TOKEN')
+            }
+        }
+    }
+}
+
 dependencies {
     testImplementation "org.junit.jupiter:junit-jupiter-api:$junitVersion"
     testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:$junitVersion"
