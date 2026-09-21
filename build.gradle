@@ -16,11 +16,14 @@
 plugins {
     id 'java'
     id 'com.github.johnrengelman.shadow' version '7.1.2'
+    id 'maven-publish'
 }
 
 repositories {
     mavenCentral()
 }
+
+ext.isReleaseBuild = project.hasProperty('releaseBuild')
 
 java {
     sourceCompatibility = JavaVersion.VERSION_1_8
@@ -95,6 +98,16 @@ task isolatedJar(type: Jar) {
     }
 
     dependsOn shadowJar
+}
+
+task sourcesJar(type: Jar) {
+    archiveClassifier = 'sources'
+    from sourceSets.main.allSource
+}
+
+task javadocJar(type: Jar) {
+    archiveClassifier = 'javadoc'
+    from javadoc
 }
 
 artifacts {
