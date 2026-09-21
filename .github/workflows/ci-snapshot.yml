@@ -1,0 +1,46 @@
+name: Snapshot Publisher
+permissions:
+  contents: read
+on:
+  push:
+    branches: [ main ]
+    tags-ignore:
+      - "[0-9]+.[0-9]+.[0-9]+"
+      - "[0-9]+.[0-9]+.[0-9]+.[0-9]+"
+    paths-ignore:
+      - 'docs/**'
+      - '.github/pull_request_template.md'
+      - '.gitignore'
+      - 'gradlew'
+      - 'gradlew.bat'
+      - '*.md'
+      - '*.txt'
+jobs:
+  gradle-wrapper-validation:
+    uses: ./.github/workflows/gradle-wrapper-validation.yml
+  build:
+    needs: gradle-wrapper-validation
+    name: Snapshot
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Check SNAPSHOT version suffix
+        run: if [[ $(cat gradle.properties | grep version= | sed 's/^version=//') =~ .*-SNAPSHOT ]]; then exit 0; else exit 1; fi
+      - name: Set up JDK
+        uses: actions/setup-java@dd06d9cba3e5552c54d9f8ea23572deb30010f7c # v6.0.0
+        with:
+          java-version: 11
+          distribution: 'zulu'
+          cache: 'gradle'
+      - name: Make gradlew Executable
+        run: chmod +x gradlew
+      - name: Gradle Check project
+        run: ./gradlew --no-daemon check
+      - name: Publish with Gradle
+        env:
+          ORG_GRADLE_PROJECT_signingKey: ${{ secrets.ORG_GRADLE_PROJECT_SIGNINGKEY }}
+          ORG_GRADLE_PROJECT_signingPassword: ${{ secrets.ORG_GRADLE_PROJECT_SIGNINGPASSWORD }}
+          SONATYPE_USER: ${{ secrets.SONATYPE_USER }}
+          SONATYPE_TOKEN: ${{ secrets.SONATYPE_TOKEN }}
+        run: ./gradlew --no-daemon publish
